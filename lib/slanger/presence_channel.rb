@@ -32,7 +32,7 @@ module Slanger
     end
 
     def subscribe(msg, callback, &blk)
-      channel_data = JSON.parse msg['data']['channel_data']
+      channel_data = JSON.parse(JSON.parse( msg['data'])['channel_data'])
       public_subscription_id = SecureRandom.uuid
 
       # Send event about the new subscription to the Redis slanger:connection_notification Channel.

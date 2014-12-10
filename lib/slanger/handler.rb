@@ -70,7 +70,7 @@ module Slanger
     def pusher_pong msg; end
 
     def pusher_subscribe(msg)
-      channel_id = msg['data']['channel']
+      channel_id = JSON.parse(msg['data'])['channel']
       klass      = subscription_klass channel_id
 
       if @subscriptions[channel_id]

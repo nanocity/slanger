@@ -15,7 +15,7 @@ module Slanger
     private
 
     def channel_data?
-      @msg['data']['channel_data']
+      @data_parsed['channel_data']
     end
 
     def callback

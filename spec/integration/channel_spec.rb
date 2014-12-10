@@ -10,7 +10,7 @@ describe 'Integration:' do
       messages = em_stream do |websocket, messages|
         case messages.length
         when 1
-          websocket.callback { websocket.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json) }
+          websocket.callback { websocket.send(subscribe_payload(channel: 'MY_CHANNEL')) }
         when 2
           Pusher['MY_CHANNEL'].trigger 'an_event', some: "Mit Raben Und Wölfen"
         when 3
@@ -26,9 +26,9 @@ describe 'Integration:' do
       messages = em_stream do |websocket, messages|
         case messages.length
         when 1
-          websocket.callback { websocket.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json) }
+          websocket.callback { websocket.send(subscribe_payload(channel: 'MY_CHANNEL')) }
         when 2
-          websocket.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json)
+          websocket.send(subscribe_payload(channel: 'MY_CHANNEL'))
         when 3
           EM.stop
         end
@@ -43,14 +43,14 @@ describe 'Integration:' do
       messages = em_stream do |client, messages|
         case messages.length
         when 1
-          client.callback { client.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json) }
+          client.callback { client.send(subscribe_payload(channel: 'MY_CHANNEL')) }
         when 2
           client.send({ event: 'pusher:unsubscribe', data: { channel: 'MY_CHANNEL'} }.to_json)
 
           client2_messages = em_stream do |client2, client2_messages|
             case client2_messages.length
               when 1
-                client2.callback { client2.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json) }
+                client2.callback { client2.send(subscribe_payload(channel: 'MY_CHANNEL')) }
               when 2
                 Pusher['MY_CHANNEL'].trigger 'an_event', { some: 'data' }
                 EM.next_tick { EM.stop }
@@ -70,13 +70,13 @@ describe 'Integration:' do
         # if this is the first message to client 1 set up another connection from the same client
         if client1_messages.one?
           client1.callback do
-            client1.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json)
+            client1.send(subscribe_payload(channel: 'MY_CHANNEL'))
           end
 
           client2_messages = em_stream do |client2, client2_messages|
             case client2_messages.length
             when 1
-              client2.callback { client2.send({ event: 'pusher:subscribe', data: { channel: 'MY_CHANNEL'} }.to_json) }
+              client2.callback { client2.send(subscribe_payload(channel: 'MY_CHANNEL')) }
             when 2
               socket_id = client1_messages.first['data']['socket_id']
               Pusher['MY_CHANNEL'].trigger 'an_event', { some: 'data' }, socket_id

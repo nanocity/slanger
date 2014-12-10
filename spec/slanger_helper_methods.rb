@@ -78,20 +78,30 @@ module SlangerHelperMethods
     id      = options[:message]['data']['socket_id']
     name    = options[:name]
     user_id = options[:user_id]
-    Pusher['presence-channel'].authenticate(id, {user_id: user_id, user_info: {name: name}})
+    Pusher['presence-channel'].authenticate( id, { user_id: user_id, user_info: { name: name } } )
   end
 
   def send_subscribe options
     auth = auth_from options
-    options[:user].send({event: 'pusher:subscribe',
-                  data: {channel: 'presence-channel'}.merge(auth)}.to_json)
+    options[:user].send({
+      event: 'pusher:subscribe',
+      data:  { channel: 'presence-channel' }.merge(auth).to_json
+    }.to_json)
+  end
+
+  def subscribe_payload options
+    {
+      event: 'pusher:subscribe',
+      data: { channel: options[:channel] }.to_json
+    }.to_json
   end
 
   def private_channel websocket, message
     auth = Pusher['private-channel'].authenticate(message['data']['socket_id'])[:auth]
-    websocket.send({ event: 'pusher:subscribe',
-                     data: { channel: 'private-channel',
-               auth: auth } }.to_json)
-
+    websocket.send({
+        event: 'pusher:subscribe',
+        data:  { channel: 'private-channel', auth: auth }.to_json
+      }.to_json
+    )
   end
 end

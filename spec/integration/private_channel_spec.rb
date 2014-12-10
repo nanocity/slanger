@@ -31,7 +31,7 @@ describe 'Integration' do
           when 1
             websocket.send({ event: 'pusher:subscribe',
                              data: { channel: 'private-channel',
-                                     auth: 'bogus' } }.to_json)
+                                     auth: 'bogus' }.to_json }.to_json)
           else
             EM.stop
           end
@@ -67,7 +67,7 @@ describe 'Integration' do
             when 1
               private_channel client2, client2_messages.first
             when 2
-              client2.send({ event: 'client-something', data: { some: 'stuff' }, channel: 'private-channel' }.to_json)
+              client2.send({ event: 'client-something', data: { some: 'stuff' }.to_json, channel: 'private-channel' }.to_json)
             end
           end
         end

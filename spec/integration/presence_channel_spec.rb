@@ -12,7 +12,7 @@ describe 'Integration' do
           messages  = em_stream do |websocket, messages|
             case messages.length
             when 1
-              websocket.send({ event: 'pusher:subscribe', data: { channel: 'presence-channel', auth: 'bogus' } }.to_json)
+              websocket.send({ event: 'pusher:subscribe', data: { channel: 'presence-channel', auth: 'bogus' }.to_json }.to_json)
             else
               EM.stop
             end

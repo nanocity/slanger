@@ -45,7 +45,6 @@ module Slanger
         callback do |value|
           Slanger::Webhook.post name: 'channel_occupied', channel: channel_id if value == 1
         end
-
       channel.subscribe *a, &blk
     end
 

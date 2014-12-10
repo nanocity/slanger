@@ -4,8 +4,9 @@ module Slanger
     delegate :send_payload, :send_message, :error, :socket_id, to: :connection
 
     def initialize socket, socket_id, msg
-      @connection = Connection.new socket, socket_id
-      @msg       = msg
+      @connection  = Connection.new socket, socket_id
+      @msg         = msg
+      @data_parsed = JSON.parse(msg["data"])
     end
 
     def subscribe
@@ -21,12 +22,11 @@ module Slanger
     end
 
     def channel_id
-      @msg['data']['channel']
+      @data_parsed['channel']
     end
 
     def token(channel_id, params=nil)
-      to_sign = [socket_id, channel_id, params].compact.join ':'
-
+      to_sign = [socket_id, channel_id, (params ? params.to_json : nil )].compact.join ':'
       digest = OpenSSL::Digest::SHA256.new
       OpenSSL::HMAC.hexdigest digest, Slanger::Config.secret, to_sign
     end
@@ -36,11 +36,11 @@ module Slanger
     end
 
     def auth
-      @msg['data']['auth']
+      @data_parsed['auth']
     end
 
     def data
-      @msg['data']['channel_data']
+      @data_parsed['channel_data'] ? JSON.parse(@data_parsed['channel_data']) : nil
     end
 
     def handle_invalid_signature
